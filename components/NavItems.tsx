@@ -29,11 +29,11 @@ const navItems: NAVITEMS[] = [
         icon: <MessageCircleMore />,
         text: "Messaging",
     },
-    {
-        src: "/notification",
-        icon: <Bell />,
-        text: "Notification",
-    },
+    // {
+    //     src: "/notification",
+    //     icon: <Bell />,
+    //     text: "Notification",
+    // },
 ]
 
 

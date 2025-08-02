@@ -19,7 +19,7 @@ const Navbar = () => {
     const { data: session } = useSession();
 
     return(
-        <div className='fixed w-full bg-white z-50 shadow-sm'>
+        <div className='fixed w-full bg-white z-50 shadow-sm overflow-visible'>
             <div className=' flex items-center max-w-6xl justify-between h-14 mx-auto px-3'>
                 <div className='flex items-center gap-2'>
                     <Image
@@ -68,7 +68,7 @@ const Navbar = () => {
             </button>
 
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56 mt-2">
+          <DropdownMenuContent className="w-56 mt-3">
             <DropdownMenuLabel className="font-semibold">
               {session.user.name}
             </DropdownMenuLabel>

@@ -28,7 +28,7 @@ export default function RootLayout({
       <Providers>
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col`}>
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col `}>
           <Navbar />
         <div className="md:bg-[#F4F2EE] flex-1 w-full">
             <main className="max-w-6xl mx-auto">
