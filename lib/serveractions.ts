@@ -7,6 +7,9 @@ import { Post } from '@/models/post.model';
 import { revalidatePath } from 'next/cache';
 import { v2 as cloudinary } from 'cloudinary';
 import dbConnection from './db';
+import { Comment } from '@/models/comment.model';
+import mongoose from 'mongoose';
+import { redirect } from 'next/navigation';
 
 cloudinary.config({
     cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -20,7 +23,10 @@ export const createPostAction = async (inputText: string, selectedFile: string) 
     await dbConnection();
     const session = await getServerSession(authOptions);
 
-    if (!session) throw new Error('Unauthorized user');
+    if (!session?.user) {
+         redirect('/login');
+    }
+    
 
     if (!inputText) throw new Error('input text is required');
 
@@ -47,20 +53,21 @@ export const createPostAction = async (inputText: string, selectedFile: string) 
             })
         }
         revalidatePath('/')
-    } catch (error: any) {
-        throw new Error(error);
-    }
+    } catch (error) {
+            console.error(error);
+            throw new Error("An error occurred");
+        }
 }
 
 // get all post
 export const getAllPosts = async () => {
     try {
         await dbConnection();
-        const post = await Post.find().sort({ createdAt: -1 })
+        const post = await Post.find().sort({ createdAt: -1 }).populate({ path: 'comment', options: { sort: { createdAt: -1 } } });
         if (!post) return [];
         return JSON.parse(JSON.stringify(post));
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -69,19 +76,55 @@ export const getAllPosts = async () => {
 export const deletePostAction = async (postId: string) => {
     await dbConnection();
     const session = await getServerSession(authOptions);
-    if (!session) throw new Error('Unauthorized user');
+   if (!session?.user) {
+         redirect('/login');
+    }
 
     const post = await Post.findById(postId)
-    if(!post) throw new Error('Post not found.');
+    if (!post) throw new Error('Post not found.');
 
-    if(post.user.userId !== session?.user?.id){
+    if (post.user.userId !== session?.user?.id) {
         throw new Error('You are not an owner of this Post.');
     }
 
     try {
-        await Post.deleteOne({_id: postId})
+        await Post.deleteOne({ _id: postId })
         revalidatePath("/")
-    } catch (error: any) {
-        throw new Error('An error occurred', error);
-    }
+    } catch (error) {
+            console.error(error);
+            throw new Error("An error occurred");
+        }
 }
+
+// post comments
+
+export const createCommentAction = async (postId: string, formData: FormData) => {
+
+    try {
+        await dbConnection();
+        const session = await getServerSession(authOptions);
+      if (!session?.user) {
+         redirect('/login');
+    }
+        if (!postId) throw new Error("Post not found.")
+        const inputText = formData.get('inputText') as string
+        if (!inputText) throw new Error('input text is required');
+
+        const databaseUser: IUser = {
+            userName: session.user.name || "Hassan",
+            userId: session.user.id,
+            profilePhoto: session.user.image || "",
+        }
+
+        const post = await Post.findById({_id: postId})
+        if(!post) throw new Error('Post not found.');
+
+        const comment = await Comment.create({textMessage: inputText, user: databaseUser})
+        post.comment?.push(comment._id as mongoose.Types.ObjectId);
+        await post.save();
+        revalidatePath('/')
+    } catch (error) {
+            console.error(error);
+            throw new Error("An error occurred");
+        }
+} 

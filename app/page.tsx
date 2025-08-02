@@ -1,7 +1,6 @@
 
 import News from "@/components/News";
 import Sidebar from "@/components/Sidebar";
-import { useSession } from "next-auth/react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Feed from "@/components/Feed";

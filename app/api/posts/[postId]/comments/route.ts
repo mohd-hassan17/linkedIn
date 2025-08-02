@@ -1,24 +1,28 @@
-import dbConnection from "@/lib/db";
-import { Post } from "@/models/post.model";
 import { NextRequest, NextResponse } from "next/server";
+import { Post } from "@/models/post.model";
+import dbConnection from "@/lib/db";
 
+export const GET = async (
+  req: NextRequest,
+  context: { params: { postId: string } }
+) => {
+  try {
+    await dbConnection();
 
-export const POST = async (req: NextRequest, { params }: { params: { postId: string } }) => {
-    try {
-        await dbConnection();
-        const post = await Post.findById(params.postId);
-        if (!post) {
-            return NextResponse.json({ error: "Post not found." }, { status: 404 });
-        }
+    const postId = context.params.postId;
 
-        const postWithComments = await post.populate({
-            path: 'comments',
-            options: { sort: { createdAt: -1 } },
-        });
+    const post = await Post.findById(postId).populate({
+      path: "comment", // 👈 match your schema here
+      options: { sort: { createdAt: -1 } },
+    });
 
-        return NextResponse.json(postWithComments, { status: 200 });
-    } catch (error) {
-        console.error("Error fetching post comments:", error);
-        return NextResponse.json({ error: 'An error occurred.' }, { status: 500 });
+    if (!post) {
+      return NextResponse.json({ error: "Post not found." }, { status: 404 });
     }
+
+    return NextResponse.json({ comments: post.comment }, { status: 200 });
+  } catch (error) {
+    console.error("Error fetching post comments:", error);
+    return NextResponse.json({ error: "An error occurred." }, { status: 500 });
+  }
 };

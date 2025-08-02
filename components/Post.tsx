@@ -20,16 +20,16 @@ const Post = ({ post }: { post: IPostDocument }) => {
     return (
         <div className='bg-white my-2 mx-2 md:mx-0 rounded-lg border border-gray-300'>
             <div className=' flex gap-2 p-4'>
-                <ProfilePhoto src={post?.user?.profilePhoto!} />
+                <ProfilePhoto src={post?.user.profilePhoto || "/default-avatar.png"}  />
                 <div className='flex items-center justify-between w-full'>
                     <div>
-                        <h1 className='text-sm font-bold'>{post?.user?.userName}
+                        <h1 className='text-sm font-bold'>{post?.user.userName}
                             {loggedInUser && (
 
                             <Badge variant={'secondary'} className='ml-2'>You</Badge>
                             )}
                             </h1>
-                        <p className='text-xs text-gray-500'>@{post?.user?.userId.slice(0, 6)}</p>
+                        <p className='text-xs text-gray-500'>@{post?.user.userId.slice(0, 6)}</p>
 
                         <p className='text-xs text-gray-500'>
                             <ReactTimeago date={new Date(post.createdAt)} minPeriod={3600} />
@@ -40,7 +40,7 @@ const Post = ({ post }: { post: IPostDocument }) => {
                     {
                         loggedInUser && (
                             <Button onClick={() => {
-                                const res = deletePostAction(post._id as string)
+                                deletePostAction(post._id as string)
                             }}
                                 size={'icon'} className='rounded-full' variant={'outline'}>
                                 <Trash2 />

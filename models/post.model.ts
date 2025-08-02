@@ -7,7 +7,7 @@ export interface IPost {
     user: IUser;
     imageUrl?:string;
     likes?: string[];
-    comment?: IComment[];
+    comment?: mongoose.Types.ObjectId[];
 }
 
 export interface IPostDocument extends IPost, Document {

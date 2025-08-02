@@ -6,8 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+
 import ProfilePhoto from "./shared/ProfilePhoto"
 import { Textarea } from "./ui/textarea"
 import { Images } from "lucide-react"
@@ -16,7 +15,7 @@ import { readFileAsDataUrl } from "@/lib/utils"
 import Image from "next/image"
 import { createPostAction } from "@/lib/serveractions"
 
-export function DialogDemo({ setOpen, open, src }: { setOpen: any, open: boolean, src: string }) {
+export function DialogDemo({ setOpen, open, src }: { setOpen: React.Dispatch<React.SetStateAction<boolean>>, open: boolean, src: string }) {
 
     const inputRef = useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<string>("");
@@ -43,7 +42,7 @@ export function DialogDemo({ setOpen, open, src }: { setOpen: any, open: boolean
         try {
             await createPostAction(inputText, selectedFile);
         } catch (error) {
-            console.log(error, 'Failed to post');
+            console.error(error, 'Failed to post');
         }
         setInputText('');
         setOpen(false);
