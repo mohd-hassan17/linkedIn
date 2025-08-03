@@ -2,7 +2,6 @@ import { IPostDocument } from "@/models/post.model"
 import Comment from "./Comment"
 
 
-
 const Comments = ({post}:{post:IPostDocument}) => {
   return (
     <div> 
@@ -10,7 +9,7 @@ const Comments = ({post}:{post:IPostDocument}) => {
            post?.comment?.map((comment) => {
             return (
 
-                <Comment key={comment._id.toString()}  comment={comment}/>
+                <Comment key={comment._id as string}  comment={comment}/>
             )
            })
         }
